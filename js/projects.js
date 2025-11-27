@@ -7,6 +7,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Setup Filter Logic
     initFilters();
+
+    // Setup Wobble Toggle
+    initWobbleToggle();
 });
 
 function animateCards() {
@@ -46,12 +49,12 @@ function initFilters() {
             // 3. Glitch/Filter Animation Logic
             const timeline = gsap.timeline();
 
-            // Step A: "Despawn" all cards briefly
+            // Step A: "Despawn" all cards briefly with a flash effect
             timeline.to(cards, {
                 duration: 0.2,
                 opacity: 0,
                 scale: 0.95,
-                filter: "brightness(2) blur(10px)", // Flash effect
+                filter: "brightness(2) blur(10px)", 
                 ease: "power1.in",
                 onComplete: () => {
                     // Step B: Toggle visibility
@@ -81,4 +84,19 @@ function initFilters() {
             });
         });
     });
+}
+
+function initWobbleToggle() {
+    const toggle = document.getElementById('wobble-toggle');
+    const card = document.getElementById('wocs-card');
+    
+    if (toggle && card) {
+        toggle.addEventListener('change', () => {
+            if (toggle.checked) {
+                card.classList.add('wobbling');
+            } else {
+                card.classList.remove('wobbling');
+            }
+        });
+    }
 }
