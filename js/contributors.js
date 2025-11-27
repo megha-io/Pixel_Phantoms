@@ -16,9 +16,11 @@ const POINTS = {
     DEFAULT: 1
 };
 
+// Initialize on Load
 document.addEventListener('DOMContentLoaded', () => {
     initData();
     fetchRecentActivity();
+    setupModalEvents(); // [FIX] Initialize modal listeners safely
 });
 
 // 1. Master Initialization Function
@@ -28,7 +30,7 @@ async function initData() {
         const [repoRes, contributorsRes, totalCommits] = await Promise.all([
             fetch(API_BASE),
             fetch(`${API_BASE}/contributors?per_page=100`),
-            fetchTotalCommits() // NEW: Dynamic commit count
+            fetchTotalCommits()
         ]);
 
         const repoData = await repoRes.json();
@@ -45,27 +47,19 @@ async function initData() {
     }
 }
 
-// NEW Helper: Fetch Total Commits using Link Header Strategy
+// Helper: Fetch Total Commits using Link Header Strategy
 async function fetchTotalCommits() {
     try {
-        // Request 1 commit per page to minimize data transfer and check the 'Link' header
         const res = await fetch(`${API_BASE}/commits?per_page=1`);
         const linkHeader = res.headers.get('Link');
-        
-        // If pagination exists, parse the "last" page number
         if (linkHeader) {
             const match = linkHeader.match(/[?&]page=(\d+)[^>]*>; rel="last"/);
-            if (match) {
-                return match[1];
-            }
+            if (match) return match[1];
         }
-        
-        // If no link header (e.g., repo has < 2 commits), count the returned array
         const data = await res.json();
         return data.length;
     } catch (e) {
-        console.error("Error fetching total commits:", e);
-        return "50+"; // Fallback in case of API limits
+        return "50+"; 
     }
 }
 
@@ -90,19 +84,14 @@ function processData(repoData, contributors, pulls, totalCommits) {
     const leadAvatar = document.getElementById('lead-avatar');
     const statsMap = {};
 
-    // A. Calculate Points from PRs
     let totalProjectPRs = 0;
     let totalProjectPoints = 0;
 
     pulls.forEach(pr => {
-        // Only count merged PRs
         if (!pr.merged_at) return; 
 
         const user = pr.user.login;
-        
-        if (!statsMap[user]) {
-            statsMap[user] = { prs: 0, points: 0 };
-        }
+        if (!statsMap[user]) statsMap[user] = { prs: 0, points: 0 };
 
         statsMap[user].prs++;
         totalProjectPRs++;
@@ -130,12 +119,9 @@ function processData(repoData, contributors, pulls, totalCommits) {
         totalProjectPoints += prPoints;
     });
 
-    // B. Merge with Contributor Profile Data
     contributorsData = contributors.map(c => {
         const login = c.login;
         const userStats = statsMap[login] || { prs: 0, points: 0 };
-        
-        // Strict Point Calculation
         const totalScore = userStats.points;
 
         if (login.toLowerCase() === REPO_OWNER.toLowerCase()) {
@@ -149,16 +135,12 @@ function processData(repoData, contributors, pulls, totalCommits) {
         };
     });
 
-
-    // C. Filter Lead & Remove contributors with 0 PRs
     contributorsData = contributorsData
         .filter(c => c.login.toLowerCase() !== REPO_OWNER.toLowerCase() && c.prs > 0)
-        // Sort by Points (Desc)
         .sort((a, b) => b.points - a.points); 
 
-    // [FIX] D. Update DOM Stats
     updateGlobalStats(
-        contributorsData.length, // <--- CHANGED THIS
+        contributorsData.length, 
         totalProjectPRs, 
         totalProjectPoints, 
         repoData.stargazers_count, 
@@ -166,7 +148,6 @@ function processData(repoData, contributors, pulls, totalCommits) {
         totalCommits
     );
 
-    // E. Render Grid
     renderContributors(1);
 }
 
@@ -176,7 +157,7 @@ function updateGlobalStats(count, prs, points, stars, forks, commits) {
     document.getElementById('total-points').textContent = points;
     document.getElementById('total-stars').textContent = stars;
     document.getElementById('total-forks').textContent = forks;
-    document.getElementById('total-commits').textContent = commits; // Updated to use dynamic value
+    document.getElementById('total-commits').textContent = commits; 
 }
 
 // 3. Get League/Badge Data
@@ -213,7 +194,6 @@ function renderContributors(page) {
         const card = document.createElement('div');
         card.className = `contributor-card ${league.tier}`;
         
-        // Click Event
         card.addEventListener('click', () => openModal(contributor, league, globalRank));
 
         card.innerHTML = `
@@ -254,10 +234,39 @@ window.changePage = function(newPage) {
     renderContributors(newPage);
 };
 
-// 5. Modal Logic
+// 5. Modal Logic & Event Listeners
+function setupModalEvents() {
+    const modal = document.getElementById('contributor-modal');
+    const closeBtn = document.querySelector('.close-modal');
+
+    // [FIX] Close on Cross Button Click
+    if (closeBtn) {
+        closeBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent bubble up
+            closeModal();
+        });
+    }
+
+    // [FIX] Close on Outside Click (Overlay)
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+    }
+
+    // [FIX] Close on Escape Key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('active')) {
+            closeModal();
+        }
+    });
+}
+
 function openModal(contributor, league, rank) {
     const modal = document.getElementById('contributor-modal');
-    const modalContainer = modal.querySelector('.modal-container'); // Select the inner container
+    const modalContainer = modal.querySelector('.modal-container');
 
     document.getElementById('modal-avatar').src = contributor.avatar_url;
     document.getElementById('modal-name').textContent = contributor.login;
@@ -273,12 +282,17 @@ function openModal(contributor, league, rank) {
     document.getElementById('modal-pr-link').href = prLink;
     document.getElementById('modal-profile-link').href = contributor.html_url;
 
-    // [FIX] RESET CLASSES & ADD CURRENT LEAGUE CLASS
-    // This allows CSS to change colors based on tier-gold, tier-silver, etc.
-    modalContainer.className = 'modal-container'; // Reset
-    modalContainer.classList.add(league.tier);  // Add specific tier class
+    // Reset & Add League Class for Dynamic Coloring
+    modalContainer.className = 'modal-container'; 
+    modalContainer.classList.add(league.tier);
 
     modal.classList.add('active');
+}
+
+// Global close function for inline usage compatibility
+window.closeModal = function() {
+    const modal = document.getElementById('contributor-modal');
+    if(modal) modal.classList.remove('active');
 }
 
 // 6. Recent Activity
