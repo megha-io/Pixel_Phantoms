@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Phantoms | Projects</title>
+    
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/back-to-top.css">
+    <link rel="stylesheet" href="../css/projects.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <div id="navbar-placeholder"></div>
+    <script src="../js/navbar.js"></script>
+    <script>renderNavbar('../');</script>
+
+    <div class="main-content">
+        
+        <section class="projects-hero">
+            <div class="hero-content">
+                <h1>Project Archive</h1>
+                <p>Showcasing the innovation and code crafted by our community.</p>
+            </div>
+        </section>
+
+        <section class="filter-section">
+            <div class="filter-container">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="web">Web Dev</button>
+                <button class="filter-btn" data-filter="ai">AI / ML</button>
+                <button class="filter-btn" data-filter="app">App Dev</button>
+                <button class="filter-btn" data-filter="hardware">Hardware</button>
+            </div>
+        </section>
+
+        <section class="content">
+            <div class="projects-grid" id="projects-grid">
+                
+                <article class="project-card" data-category="web">
+                    <div class="card-image">
+                        <img src="https://picsum.photos/seed/pixel1/600/400" alt="Pixel Phantoms Website">
+                        <div class="card-overlay">
+                            <a href="#" class="btn-view"><i class="fas fa-external-link-alt"></i> Demo</a>
+                            <a href="#" class="btn-github"><i class="fab fa-github"></i> Code</a>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <span class="project-tag">Web Development</span>
+                        <h3>Pixel Phantoms Official</h3>
+                        <p>The official community website built to showcase events, members, and projects. Features a dynamic leaderboard and dark mode.</p>
+                        <div class="tech-stack">
+                            <span>HTML5</span>
+                            <span>CSS3</span>
+                            <span>JavaScript</span>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="project-card" data-category="ai">
+                    <div class="card-image">
+                        <img src="https://picsum.photos/seed/ai_robo/600/400" alt="AI Chatbot">
+                        <div class="card-overlay">
+                            <a href="#" class="btn-view"><i class="fas fa-external-link-alt"></i> Demo</a>
+                            <a href="#" class="btn-github"><i class="fab fa-github"></i> Code</a>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <span class="project-tag">AI / ML</span>
+                        <h3>Phantom Bot</h3>
+                        <p>An intelligent discord bot that manages community queries, moderation, and event reminders using NLP.</p>
+                        <div class="tech-stack">
+                            <span>Python</span>
+                            <span>TensorFlow</span>
+                            <span>Discord.py</span>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="project-card" data-category="app">
+                    <div class="card-image">
+                        <img src="https://picsum.photos/seed/app_dev/600/400" alt="Campus App">
+                        <div class="card-overlay">
+                            <a href="#" class="btn-view"><i class="fas fa-external-link-alt"></i> Demo</a>
+                            <a href="#" class="btn-github"><i class="fab fa-github"></i> Code</a>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <span class="project-tag">App Dev</span>
+                        <h3>Campus Connect</h3>
+                        <p>A mobile application for students to track attendance, notes, and canteen orders in real-time.</p>
+                        <div class="tech-stack">
+                            <span>Flutter</span>
+                            <span>Firebase</span>
+                            <span>Dart</span>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="project-card" data-category="hardware">
+                    <div class="card-image">
+                        <img src="https://picsum.photos/seed/iot/600/400" alt="IoT Smart Home">
+                        <div class="card-overlay">
+                            <a href="#" class="btn-view"><i class="fas fa-external-link-alt"></i> Demo</a>
+                            <a href="#" class="btn-github"><i class="fab fa-github"></i> Code</a>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <span class="project-tag">Hardware</span>
+                        <h3>Smart Lab IoT</h3>
+                        <p>An automated system to control lab lights and temperature based on occupancy sensors.</p>
+                        <div class="tech-stack">
+                            <span>Arduino</span>
+                            <span>C++</span>
+                            <span>IoT</span>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="project-card" data-category="web">
+                    <div class="card-image">
+                        <img src="https://picsum.photos/seed/crypto/600/400" alt="Crypto Dashboard">
+                        <div class="card-overlay">
+                            <a href="#" class="btn-view"><i class="fas fa-external-link-alt"></i> Demo</a>
+                            <a href="#" class="btn-github"><i class="fab fa-github"></i> Code</a>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <span class="project-tag">Web Development</span>
+                        <h3>Crypto Tracker</h3>
+                        <p>Real-time cryptocurrency dashboard visualizing market trends using public APIs.</p>
+                        <div class="tech-stack">
+                            <span>React</span>
+                            <span>Chart.js</span>
+                            <span>API</span>
+                        </div>
+                    </div>
+                </article>
+
+                 <article class="project-card" data-category="ai">
+                    <div class="card-image">
+                        <img src="https://picsum.photos/seed/vision/600/400" alt="Computer Vision">
+                        <div class="card-overlay">
+                            <a href="#" class="btn-view"><i class="fas fa-external-link-alt"></i> Demo</a>
+                            <a href="#" class="btn-github"><i class="fab fa-github"></i> Code</a>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <span class="project-tag">AI / ML</span>
+                        <h3>Sign Language Recognizer</h3>
+                        <p>A computer vision model that translates hand sign language into text in real-time.</p>
+                        <div class="tech-stack">
+                            <span>OpenCV</span>
+                            <span>Python</span>
+                            <span>PyTorch</span>
+                        </div>
+                    </div>
+                </article>
+
+            </div>
+        </section>
+
+    </div>
+
+    <div id="footer-placeholder"></div>
+    <script src="../js/footer.js"></script>
+    <script>renderFooter('../');</script>
+
+    <script src="../js/theme.js"></script>
+    <script src="../js/back-to-top.js"></script>
+    <script src="../js/projects.js"></script> </body>
+</html>
