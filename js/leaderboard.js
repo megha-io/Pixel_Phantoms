@@ -743,3 +743,81 @@ function loadMockProtocol() {
     // Store contributors for later use
     globalState.contributors = mockData;
 }
+
+/* =========================================
+   PROFILE MANAGEMENT LOGIC (WORKING)
+   ========================================= */
+
+// Init Profile when DOM loads
+document.addEventListener('DOMContentLoaded', () => {
+    loadProfileData();
+});
+
+function loadProfileData() {
+    // 1. Check LocalStorage first
+    const savedData = localStorage.getItem('pixel_phantom_profile');
+    
+    if (savedData) {
+        const data = JSON.parse(savedData);
+        // Fill fields
+        document.getElementById('p-name').value = data.name || '';
+        document.getElementById('p-email').value = data.email || '';
+        document.getElementById('p-phone').value = data.phone || '';
+        document.getElementById('p-bio').value = data.bio || '';
+        document.getElementById('p-college').value = data.college || '';
+        document.getElementById('p-grad-year').value = data.gradYear || '';
+        document.getElementById('p-track').value = data.track || 'Web Security';
+        document.getElementById('p-github').value = data.github || '';
+        document.getElementById('p-linkedin').value = data.linkedin || '';
+        document.getElementById('p-portfolio').value = data.portfolio || '';
+
+        // Update Header
+        if(data.name) document.getElementById('profile-name-display').innerText = data.name;
+    } else {
+        // 2. Fallback to Mock Data (First time user)
+        document.getElementById('profile-name-display').innerText = "NEW RECRUIT";
+    }
+}
+
+function saveProfileData() {
+    const btn = document.querySelector('.btn-primary');
+    const originalText = btn.innerHTML;
+    
+    // Gather Data
+    const profileData = {
+        name: document.getElementById('p-name').value,
+        email: document.getElementById('p-email').value,
+        phone: document.getElementById('p-phone').value,
+        bio: document.getElementById('p-bio').value,
+        college: document.getElementById('p-college').value,
+        gradYear: document.getElementById('p-grad-year').value,
+        track: document.getElementById('p-track').value,
+        github: document.getElementById('p-github').value,
+        linkedin: document.getElementById('p-linkedin').value,
+        portfolio: document.getElementById('p-portfolio').value
+    };
+
+    // Save to LocalStorage
+    localStorage.setItem('pixel_phantom_profile', JSON.stringify(profileData));
+
+    // Update Header instantly
+    if(profileData.name) document.getElementById('profile-name-display').innerText = profileData.name;
+
+    // Button Animation
+    btn.innerHTML = '<i class="fas fa-check"></i> PROTOCOLS SAVED';
+    btn.style.background = '#0aff60'; // Green color
+    
+    setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.style.background = ''; // Reset
+    }, 2000);
+}
+
+function resetProfileData() {
+    if(confirm("WARNING: Are you sure you want to purge all local identity data?")) {
+        localStorage.removeItem('pixel_phantom_profile');
+        document.querySelectorAll('.hud-input').forEach(input => input.value = '');
+        document.getElementById('profile-name-display').innerText = "UNKNOWN AGENT";
+        alert("System Purged.");
+    }
+}
