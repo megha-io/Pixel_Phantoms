@@ -11,7 +11,9 @@ const SCORING = {
         L1: 2,     // Low Complexity
         DEFAULT: 1 // Standard PR
     },
-    
+    EVENT: {
+        ATTENDANCE: 50  // Points per event attended
+    }
 };
 
 // Event attendance points
@@ -46,7 +48,9 @@ async function initLeaderboard() {
 
     try {
         const pulls = await fetchAllPulls();
-        const scores = calculateScores(pulls);
+        const eventCSV = await fetchEventCSV();
+        const attendanceMap = parseAttendanceCSV(eventCSV);
+        const scores = calculateLeaderboard(pulls, attendanceMap);
         const topContributors = getTopContributors(scores);
 
         // Cache successful data
@@ -254,7 +258,7 @@ function renderLeaderboard(contributors, isCached = false) {
                 <span class="lb-username">@${contributor.login}</span>
                 <span class="lb-stats">PRs: ${contributor.prCount} | Events: ${contributor.events}</span>
                 <span class="lb-league-tag" style="color: ${league.color}">${league.name}</span>
-                <span class="lb-stats">${contributor.prCount} PRs • ${contributor.eventsAttended} Events</span>
+                <span class="lb-stats">${contributor.prCount} PRs • ${contributor.events} Events</span>
             </div>
             <div class="lb-xp-val">
                 ${contributor.xp.toLocaleString()} XP
