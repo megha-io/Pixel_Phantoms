@@ -4,26 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game Development Roadmap - Pixel Phantoms</title>
+    
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/navbar.css">
     <link rel="stylesheet" href="../css/footer.css">
     <link rel="stylesheet" href="../css/game-development-roadmap.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <header id="navbar-placeholder"></header>
+    <div id="navbar-placeholder"></div>
 
     <main class="roadmap-main">
         <section class="roadmap-hero">
-            <h1>Game Development Roadmap</h1>
-            <p>A comprehensive roadmap to guide your journey into Game Development.</p>
+            <h1 class="glitch-text">GAME_DEV_PROTOCOL</h1>
+            <p class="subtitle">Initialize sequence: Zero to Hero</p>
         </section>
 
-        <section class="roadmap-timeline" id="roadmap-timeline">
-            <div class="loading-state">
-                <div class="spinner"></div>
-                <p>Loading Game Development roadmap...</p>
+        <div class="roadmap-wrapper">
+            <div class="roadmap-spine"></div>
+            
+            <div id="roadmap-content">
+                <div class="loading-state">
+                    <p style="text-align:center; color:#00ff41;">LOADING_ASSETS...</p>
+                </div>
             </div>
-        </section>
+        </div>
 
         <section class="roadmap-feedback">
             <h2>Feedback</h2>
@@ -31,10 +37,19 @@
         </section>
     </main>
 
-    <footer id="footer-placeholder"></footer>
+    <div id="footer-placeholder"></div>
 
     <script src="../js/navbar.js"></script>
+    <script>
+        // Ensure navbar loads if the script function exists
+        if(typeof renderNavbar === 'function') renderNavbar('../');
+    </script>
     <script src="../js/footer.js"></script>
+    <script>
+        // Ensure footer loads if the script function exists
+        if(typeof renderFooter === 'function') renderFooter('../');
+    </script>
+    
     <script src="../js/game-development-roadmap.js"></script>
 </body>
 </html>

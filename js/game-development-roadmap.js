@@ -3,33 +3,45 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function loadRoadmap() {
+    // 1. Target the correct container ID from the HTML
     const container = document.getElementById('roadmap-content');
     
+    if (!container) {
+        console.error("Error: Element with id 'roadmap-content' not found.");
+        return;
+    }
+
     try {
+        // 2. Fetch the data
         const response = await fetch('../data/roadmaps.json');
-        if (!response.ok) throw new Error('Failed to fetch roadmap data');
+        if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
         
         const data = await response.json();
-        // Access the game-dev-roadmap key specifically
-        const roadmapData = data['game-dev-roadmap'];
-        const phases = roadmapData.phases;
+        
+        // 3. Access the specific 'game-dev-roadmap' key from your JSON
+        const roadmapData = data['game-dev-roadmap']; 
+
+        if (!roadmapData) {
+            container.innerHTML = '<p style="text-align:center; color:red;">[ERROR]: Game Dev Roadmap data key not found in JSON.</p>';
+            return;
+        }
 
         container.innerHTML = ''; // Clear loading state
+        let globalModuleIndex = 0; // For left/right alternation
 
-        let globalModuleIndex = 0; // To track left/right alternation across phases
-
-        phases.forEach(phase => {
-            // 1. Create Phase Section
+        // 4. Loop through phases
+        roadmapData.phases.forEach(phase => {
+            // Create Phase Block
             const phaseBlock = document.createElement('div');
             phaseBlock.className = 'phase-block';
 
-            // 2. Create Header (e.g., 1. THE ARCADE CORE)
+            // Create Header
             const header = document.createElement('div');
             header.className = 'phase-header';
             header.innerText = phase.title;
             phaseBlock.appendChild(header);
 
-            // 2.5 Create Description (Specific to Game Dev JSON structure)
+            // Create Description (Specific to your Game Dev JSON structure)
             if (phase.description) {
                 const desc = document.createElement('p');
                 desc.className = 'phase-description';
@@ -37,26 +49,23 @@ async function loadRoadmap() {
                 phaseBlock.appendChild(desc);
             }
 
-            // 3. Create Container for Modules
+            // Create Modules Container
             const modulesContainer = document.createElement('div');
             modulesContainer.className = 'modules-container';
 
-            // 4. Create Modules (Mapping 'resources' to visual nodes)
+            // 5. Loop through resources (modules)
             if (phase.resources && Array.isArray(phase.resources)) {
                 phase.resources.forEach(res => {
                     const link = document.createElement('a');
+                    // Alternate left/right classes
                     link.className = `module-node ${globalModuleIndex % 2 === 0 ? 'left' : 'right'}`;
-                    link.href = res.url;
+                    link.href = res.url || '#';
                     link.target = "_blank";
-                    
-                    // Default all to unlocked as Game Dev JSON has no status field
-                    link.setAttribute('data-status', 'unlocked');
+                    link.setAttribute('data-status', 'unlocked'); // Default to unlocked
 
-                    // Note: resources in JSON have 'name' and 'url', but no 'desc'
-                    // We use a generic label or omit the description paragraph
                     link.innerHTML = `
                         <h4>${res.name}</h4>
-                        <p>Click to view resource</p>
+                        <p>Click to access resource</p>
                     `;
 
                     modulesContainer.appendChild(link);
@@ -68,52 +77,8 @@ async function loadRoadmap() {
             container.appendChild(phaseBlock);
         });
 
-        // Initialize GSAP Animations
-        animateRoadmap();
-
     } catch (error) {
-        console.error(error);
-        container.innerHTML = `<div style="text-align:center; color:red;">[ERROR] ROADMAP_DATA_CORRUPTED: ${error.message}</div>`;
+        console.error("Roadmap Load Error:", error);
+        container.innerHTML = `<p style="text-align:center; color:red;">[SYSTEM FAILURE]: ${error.message}</p>`;
     }
-}
-
-function animateRoadmap() {
-    if (typeof gsap === 'undefined') return;
-
-    gsap.registerPlugin(ScrollTrigger);
-
-    // Animate Spine
-    gsap.from('.roadmap-spine', {
-        height: 0,
-        duration: 2,
-        ease: 'power1.inOut'
-    });
-
-    // Animate Phase Headers
-    gsap.utils.toArray('.phase-header').forEach(header => {
-        gsap.from(header, {
-            scrollTrigger: {
-                trigger: header,
-                start: "top 80%"
-            },
-            y: 50,
-            opacity: 0,
-            duration: 0.6,
-            ease: "back.out(1.7)"
-        });
-    });
-
-    // Animate Module Nodes
-    gsap.utils.toArray('.module-node').forEach(node => {
-        gsap.from(node, {
-            scrollTrigger: {
-                trigger: node,
-                start: "top 85%"
-            },
-            scale: 0.8,
-            opacity: 0,
-            duration: 0.5,
-            ease: "power2.out"
-        });
-    });
 }
