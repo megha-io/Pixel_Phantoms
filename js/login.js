@@ -139,16 +139,59 @@ document.addEventListener('DOMContentLoaded', () => {
         const tabBtns = [loginTabBtn, signupTabBtn];
         tabBtns.forEach(btn => btn.classList.remove('active'));
         
+        // Clear all error messages
+        hideError('username-error');
+        hideError('password-error');
+        hideError('new-username-error');
+        hideError('new-email-error');
+        hideError('new-password-error');
+        
         if (mode === 'login') {
             loginTabBtn.classList.add('active');
             setActiveView('login-view');
             statusValue.textContent = 'STATUS_IDLE';
+            
+            // Enable required validation for login fields
+            usernameInput.required = true;
+            passwordInput.required = true;
+            
+            // Disable required validation for signup fields (hidden)
+            newUsernameInput.required = false;
+            newEmailInput.required = false;
+            newPasswordInput.required = false;
+            
+            // Clear signup form values to prevent validation issues
+            newUsernameInput.value = '';
+            newEmailInput.value = '';
+            newPasswordInput.value = '';
+            
         } else if (mode === 'signup') {
             signupTabBtn.classList.add('active');
             setActiveView('signup-view');
             statusValue.textContent = 'STATUS_REGISTRATION';
+            
+            // Disable required validation for login fields (hidden)
+            usernameInput.required = false;
+            passwordInput.required = false;
+            
+            // Enable required validation for signup fields
+            newUsernameInput.required = true;
+            newEmailInput.required = true;
+            newPasswordInput.required = true;
+            
+            // Clear login form values to prevent validation issues
+            usernameInput.value = '';
+            passwordInput.value = '';
+            
         } else if (mode === 'verification') {
             setActiveView('verification-view');
+            
+            // Disable all field validation during verification
+            usernameInput.required = false;
+            passwordInput.required = false;
+            newUsernameInput.required = false;
+            newEmailInput.required = false;
+            newPasswordInput.required = false;
         }
     }
 
@@ -223,26 +266,21 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleSuccess(isLogin) {
         verificationIcon.className = 'fas fa-lock-open success-icon';
         verificationTitle.textContent = isLogin ? 'ACCESS GRANTED' : 'REGISTRATION COMPLETE';
-        verificationMessage.textContent = isLogin ? 'Welcome back, Agent. Redirecting to Command Center...' : 'Agent ID successfully created. You can now log in.';
+        verificationMessage.textContent = isLogin ? 'Welcome back, Agent. Redirecting to Profile...' : 'Agent ID successfully created. Redirecting to Profile...';
         statusValue.textContent = 'STATUS_ONLINE';
 
         if (isLogin) {
             setTimeout(() => {
                 localStorage.setItem('session_codename', usernameInput.value);
-                window.location.href = '../pages/leaderboard.html'; 
-            }, 1000);
+                window.location.href = '../pages/profile.html'; 
+            }, 1500);
         }
         
         if (!isLogin) {
-            // Clear sign up fields
-            newUsernameInput.value = '';
-            newEmailInput.value = '';
-            newPasswordInput.value = '';
-
+            // For new registration, also save session and redirect to profile
             setTimeout(() => {
-                setAuthMode('login');
-                feedbackMsg.innerHTML = '✅ Registration successful! Please log in.';
-                feedbackMsg.className = 'feedback-message success show';
+                localStorage.setItem('session_codename', newUsernameInput.value);
+                window.location.href = '../pages/profile.html';
             }, 1500);
         }
     }
@@ -301,6 +339,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- INITIALIZATION ---
+    
+    // Disable HTML5 form validation - we'll handle it manually
+    authForm.setAttribute('novalidate', 'true');
+    
     function initMatrixRain() {
         const canvas = document.getElementById('cyber-rain-canvas');
         if (!canvas) return; 
